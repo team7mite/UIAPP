@@ -1,0 +1,30 @@
+.search-btn {
+    background-color: #00303f !important;
+    color: white;
+    border: none;
+    margin-top:6px;
+    /* margin-left: 0px; */
+  }
+
+  .labels{
+    top: -6px;
+    font-size: 0.75em;
+    color: #009688;
+    font-weight: bold;
+  }
+.btn-btn{
+  display: block;
+  width: 13%;
+  border: none;
+  margin-right: 10px;
+  background-color:white;
+  border: 2px solid black;
+  border-radius: 6px;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  font-family: 'Times New Roman', Times, serif;
+ 
+}
+ 
+

@@ -1,0 +1,230 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<ng-container *ngIf="userRole.includes('STUDENT'); else elseTemplate">
+
+  <div class="modal fade" id="data" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><b>Internal Assesment Details</b></h4>
+        </div>
+        <div class="modal-body">
+          <p><b>Course Name : </b>{{coursename}}</p>
+          <hr>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>IA#</th>
+                <th>Max.Marks</th>
+                <th>Marks Scored</th>
+                <th>IA Percent</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <tr *ngFor="let i of barData">
+                <th scope="row">{{i.iaNumber}}</th>
+                <td>{{i.maxMarks}}</td>
+                <td>{{i.obtainedMarks}}</td>
+                <td>{{i.ia_percent}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-body">
+          <h5>Class Attended:{{present}} &nbsp; &nbsp; Class Taken:{{total}}</h5>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="fa fa-thumbs-up" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+
+  <i class="fas fa-chart-line"> Performance Analyisis</i><br>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-2">
+        <mat-label class="labels">Academic Year</mat-label>
+        <mat-select [(ngModel)]="selectedyear">
+          <mat-option *ngFor="let year of academicYears" [value]="year">{{year}}</mat-option>
+        </mat-select>
+      </div>
+      <div class="col-md-2">
+        <mat-label class="labels">Semesters</mat-label>
+        <mat-select name="terms" multiple [(ngModel)]="terms">
+          <mat-option *ngFor="let terms of termnumbers" [value]="terms">
+            Semester - {{terms}}
+          </mat-option>
+        </mat-select>
+
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary search search-btn" (click)="searchbutton();" [disabled]=clicked>
+          <i class="fa fa-search ml-0"></i> Search
+        </button>
+
+      </div>
+
+
+      <div class="col-md-6">
+      </div>
+      <div class="col-md-1">
+        <button class="back-button" (click)="back_()" *ngIf="chart_visibility" style="float: right; margin: 10px;">
+          <span class="fa fa-chevron-left"></span> Back</button>
+      </div>
+
+    </div>
+    <div class="row">
+      <hr>
+      <div class="center"> <img *ngIf="showSpinner" src="../../../assets/images/gears.gif" class="center" sizes="100"
+          width="100" /></div>
+    </div>
+
+
+
+
+    <div class="row">
+
+      <div *ngIf="firstLevelChart && !error_flag && chart_visibility">
+        <p class="page-title"><b>{{title}}</b></p>
+        <google-chart [data]='firstLevelChart' (chartSelect)="second_level($event)" data-toggle="modal"
+          data-target="#data">
+        </google-chart>
+      </div>
+      <div *ngIf="error_flag">
+        <p class="page-title">{{error_message}}</p>
+
+      </div>
+    </div>
+  </div>
+
+
+</ng-container>
+
+<ng-template #elseTemplate>
+  <div class="row">
+    <div class="col-md-2">
+      <mat-label class="labels">Academic Year</mat-label>
+      <mat-select [(ngModel)]="selectedyear">
+        <mat-option>--Select Year--</mat-option>
+        <mat-option *ngFor="let year of academicYears" [value]="year">{{year}}</mat-option>
+      </mat-select>
+    </div>
+    <div class="col-md-2" *ngIf="userRole.includes('PRINCIPAL')">
+      <mat-form-field>
+        <mat-label class="labels">Select Department</mat-label>
+        <mat-select name="years" [(ngModel)]="selectedDepatment">
+          <mat-option *ngFor="let y of departments" [value]="y">{{y}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-md-2">
+      <mat-label class="labels">Semesters</mat-label>
+      <mat-select name="terms" [(ngModel)]="terms">
+        <mat-option *ngFor="let terms of termnumbers" [value]="terms">
+          Semester - {{terms}}
+        </mat-option>
+      </mat-select>
+
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary search search-btn" (click)="onSearch();" [disabled]=clicked>
+        <i class="fa fa-search ml-0"></i> Search
+      </button>
+
+    </div>
+
+    <div class="col-md-6">
+    </div>
+
+
+  </div>
+  <div class="row">
+    <hr>
+    <div class="center"> <img *ngIf="showSpinner" src="../../../assets/images/gears.gif" class="center" sizes="100"
+        width="100" /></div>
+  </div>
+  <div class="row">
+  </div>
+  <div class="row">
+    <div class="col-sm-2 faculty-list text-left" *ngIf="userRole.includes('HOD') || userRole.includes('PRINCIPAL')">
+      <div *ngIf="resul.length>0" class="h4 font-weight-bold">Faculties</div>
+      <div>
+        <button class="btn btn-light btn-block text-left faculty" *ngFor="let re of resul"
+          (click)="getFacultyDetails(re['employeeGivenId'],re['name'])">{{re['name']}}
+        </button>
+      </div>
+    </div>
+    <ng-container *ngIf="userRole.includes('FACULTY'); else elseTemplate">
+      <div class="col-md-12">
+        <div *ngIf="facultyChart && !error_flag && chart_visibility">
+          <p class="page-title"><b>{{title}}</b></p>
+          <google-chart [data]='facultyChart' (chartSelect)="faculty_level($event)" data-toggle="modal"
+            data-target="#fac_modal"> </google-chart>
+        </div>
+      </div>
+      <div *ngIf="error_flag">
+        <p class="page-title">{{error_message}}</p>
+      </div>
+    </ng-container>
+    <ng-template #elseTemplate>
+      <div class="col-md-10">
+        <div *ngIf="facultyChart && !error_flag && chart_visibility">
+          <p class="page-title"><b>{{title}}</b></p>
+          <google-chart [data]='facultyChart' (chartSelect)="faculty_level($event)" data-toggle="modal"
+            data-target="#fac_modal"> </google-chart>
+        </div>
+      </div>
+      <div *ngIf="error_flag">
+        <p class="page-title">{{error_message}}</p>
+      </div>
+    </ng-template>
+  </div>
+  <div class="modal fade" id="fac_modal" role="dialog">
+    <div class="modal-dialog">
+  
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><b>Internal Assesment Details</b></h4>
+        </div>
+        <div class="modal-body">
+          <p><b>Course Name : </b>{{coursename}}</p>
+          <hr>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>IA#</th>
+                <th>Max.Marks</th>
+                <th>Marks Scored</th>
+                <th>Attendance %</th>
+              </tr>
+            </thead>
+            <tbody>
+  
+              <tr *ngFor="let i of barData">
+                <th scope="row">{{i.iaNumber}}</th>
+                <td>{{i.maxMarks}}</td>
+                <td>{{i.obtainedMarks}}</td>
+                <td>{{i.ia_percent}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+  
+      </div>
+  
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,16 @@
+<div>
+    <header class="main-header">
+        <a>
+            <img src="assets/images/heraizen_logo.png" class="logo" />
+        </a>
+        <nav class="navbar navbar-fixed-top">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><span class="fas fa-users-cog" *ngIf="user">&nbsp;<font size="4">{{user.user}}</font></span> </a></li>
+                    <li><a href=""><i class="fas fa-sync-alt fa-spin" (click)="logOut()"></i> Logout</a></li>
+                </ul>
+            </div>
+
+        </nav>
+    </header>
+</div>
